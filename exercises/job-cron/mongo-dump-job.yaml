@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dump
+spec:
+  template:
+    spec:
+      nodeSelector:
+        tier: db
+      restartPolicy: Never
+      containers:
+      - name: mongo
+        image: mongo:3.6
+        command:
+        - /bin/bash
+        - -c
+        - mongodump --gzip --host db --archive=/dump/db.gz
+        volumeMounts:
+        - name: dump
+          mountPath: /dump
+      volumes:
+      - name: dump
+        hostPath:
+          path: /dump
